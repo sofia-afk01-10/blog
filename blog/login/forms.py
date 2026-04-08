@@ -1,4 +1,4 @@
-from .models import User
+from .models import User, Role
 from django import forms
 
 class UserForm(forms.ModelForm):
@@ -12,4 +12,12 @@ class UserForm(forms.ModelForm):
             'last_name': 'Фамилия',
             'age': 'Возраст',
             'role': 'Роль',
+        }
+
+class RoleForm(forms.ModelForm):
+    class Meta:
+        model = Role
+        fields = ['name']
+        labels = {
+            'name': 'Название',
         }
