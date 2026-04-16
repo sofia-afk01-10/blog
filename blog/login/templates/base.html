@@ -11,7 +11,15 @@
     <div id="wrapper">
 	<div id="header">
 		<div id="menu">
-			<a href="/users" {% if page == 'users' %} class="active" {% endif %}>Пользователи</a>
+			{% if user.login %}
+				<a href="/" {% if page == 'index' %} class="active" {% endif %}>Главная</a>
+				<a href="/users" {% if page == 'users' %} class="active" {% endif %}>Пользователи</a>
+				<a href="/logout" {% if page == 'logout' %} class="active" {% endif %}>Выйти</a>
+			{% else %}
+				<a href="/add_user" {% if page == 'register' %} class="active" {% endif %}>Регистрация</a>
+				<a href="/login" {% if page == 'login' %} class="active" {% endif %}>Войти</a>
+			{% endif %}
+			
 		</div>
 	</div>
 	<div id="content">

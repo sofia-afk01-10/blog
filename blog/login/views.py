@@ -2,14 +2,17 @@ from django.shortcuts import render, redirect
 from .models import User, Role
 from .forms import UserForm, RoleForm
 
-def main(request):
-    return render(request, 'base.html', {'page': 'main'})
 
 #страница со списком пользователей
 def users(request):
     #получим всех пользователей из базы
     users = User.objects.all()
-    return render(request, 'users.html', {'users': users, 'page': 'users'})
+    if request.session.get('user_id'):
+        id = request.session.get('user_id')
+        u = User.objects.get(id=id)
+        return render(request, 'users.html', {'users': users, 'user':u ,'page': 'users'})
+    else:
+        return redirect('/login/')
 
 # Create your views here.
 def add_user(request):
@@ -20,7 +23,7 @@ def add_user(request):
             return redirect('/users/')
     else:
         form = UserForm()
-    return render(request, "add_user.html", {'form': form, 'page': 'users'})
+    return render(request, "add_user.html", {'form': form, 'page': 'register'})
 
     
 def add_role(request):
@@ -32,3 +35,34 @@ def add_role(request):
     else:
         form = RoleForm()
     return render(request, "add_role.html", {'form': form, 'page': 'add_role'})
+
+def index(request):
+    if request.session.get('user_id'):
+        id = request.session.get('user_id')
+        u = User.objects.get(id=id)
+        return render (request, 'index.html', {'user': u})
+    else:
+        return redirect('/login/')
+
+def login(request):
+    if request.method == "GET":
+        return render(request, 'login.html')
+    else:
+        login = request.POST.get('login')
+        password = request.POST.get('pas')
+
+        try:
+            user = User.objects.get(login=login)
+        except User.DoesNotExist:
+            return redirect('/login')
+
+        if password != user.password:
+            return redirect('/login')
+
+        request.session['user_id'] = user.id
+        request.session['login'] = user.login
+        return redirect('/', {'page': 'login'})
+
+def logout_view(request):
+    request.session.flush()
+    return redirect('/login', {'page': 'logout'})
